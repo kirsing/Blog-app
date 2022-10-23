@@ -3,6 +3,7 @@ package com.example.myblogapplication.controller;
 
 
 import com.example.myblogapplication.payload.PostDTO;
+import com.example.myblogapplication.payload.PostResponse;
 import com.example.myblogapplication.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,11 @@ public class PostController {
         return new ResponseEntity<>(postService.createPost(postDTO), HttpStatus.CREATED);
     }
     @GetMapping
-    public List<PostDTO> getAllPosts() {
-        return postService.findAllPosts();
+    public PostResponse getAllPosts(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+    ) {
+        return postService.findAllPosts(pageNo, pageSize);
     }
     @GetMapping("/{id}")
         public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") int id) {
