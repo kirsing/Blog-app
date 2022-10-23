@@ -5,6 +5,7 @@ package com.example.myblogapplication.controller;
 import com.example.myblogapplication.payload.PostDTO;
 import com.example.myblogapplication.payload.PostResponse;
 import com.example.myblogapplication.service.PostService;
+import com.example.myblogapplication.utils.AppConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,12 @@ public class PostController {
     }
     @GetMapping
     public PostResponse getAllPosts(
-            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
-    ) {
-        return postService.findAllPosts(pageNo, pageSize);
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIR, required = false) String sortDirection
+            ) {
+        return postService.findAllPosts(pageNo, pageSize, sortBy, sortDirection);
     }
     @GetMapping("/{id}")
         public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") int id) {
