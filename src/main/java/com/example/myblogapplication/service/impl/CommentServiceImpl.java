@@ -1,5 +1,6 @@
 package com.example.myblogapplication.service.impl;
 
+import com.example.myblogapplication.exception.BlogAPIException;
 import com.example.myblogapplication.exception.ResourceNotFoundException;
 import com.example.myblogapplication.model.Comment;
 import com.example.myblogapplication.model.Post;
@@ -7,7 +8,11 @@ import com.example.myblogapplication.payload.CommentDTO;
 import com.example.myblogapplication.repository.CommentRepository;
 import com.example.myblogapplication.repository.PostRepository;
 import com.example.myblogapplication.service.CommentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -21,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDTO createPost(int postId, CommentDTO commentDTO) {
+    public CommentDTO createComment(int postId, CommentDTO commentDTO) {
         // convert DTO -> entity
         Comment comment = mapToEntity(commentDTO);
 
@@ -36,6 +41,50 @@ public class CommentServiceImpl implements CommentService {
 
         return mapToDTO(newComment);
     }
+
+    @Override
+    public CommentDTO getCommentById(int postId, int commentId) {
+        // retrieve post enitity by id
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+
+        // retrieve comment by id
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentId));
+
+        if(!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment doesn't to this post");
+        }
+
+        return mapToDTO(comment);
+    }
+
+    @Override
+    public List<CommentDTO> getCommentsByPostId(int postId) {
+        // retrieve comments by postId
+        List<Comment> comments = commentRepository.findByPostId(postId);
+
+        // convert list of comments
+        return comments.stream().map(comment -> mapToDTO(comment)).collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDTO updateComment(int postId, int commentId, CommentDTO commentRequest) {
+        // retrieve post entity by id
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+
+        // retrieve comment by id
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentId));
+
+        if (!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment doesn't belong to this post");
+        }
+        comment.setUsername(commentRequest.getUsername());
+        comment.setEmail(commentRequest.getEmail());
+        comment.setBody(commentRequest.getBody());
+
+       Comment updatedComment = commentRepository.save(comment);
+       return mapToDTO(updatedComment);
+    }
+
     private CommentDTO mapToDTO(Comment comment) {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(comment.getId());
@@ -53,18 +102,5 @@ public class CommentServiceImpl implements CommentService {
         return comment;
     }
 
-    @Override
-    public CommentDTO getCommentById(int id) {
-        return null;
-    }
 
-    @Override
-    public CommentDTO updateCommentById(int id) {
-        return null;
-    }
-
-    @Override
-    public void deletePostById(int id) {
-
-    }
 }

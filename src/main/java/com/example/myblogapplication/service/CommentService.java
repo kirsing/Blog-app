@@ -2,12 +2,14 @@ package com.example.myblogapplication.service;
 
 import com.example.myblogapplication.payload.CommentDTO;
 
+import java.util.List;
+
 public interface CommentService {
-    CommentDTO createPost(int postId, CommentDTO commentDTO);
+    CommentDTO createComment(int postId, CommentDTO commentDTO);
 
-    CommentDTO getCommentById(int id);
+    CommentDTO getCommentById(int postId, int commentId);
 
-    CommentDTO updateCommentById(int id);
+    List<CommentDTO> getCommentsByPostId(int postId);
 
-    void deletePostById(int id);
+    CommentDTO updateComment(int postId, int commentId, CommentDTO commentRequest);
 }
