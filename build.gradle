@@ -28,6 +28,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.1.1'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.7.5'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.5'
 }
 
 tasks.named('test') {
