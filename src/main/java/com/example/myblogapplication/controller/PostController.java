@@ -9,6 +9,7 @@ import com.example.myblogapplication.utils.AppConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,7 +23,7 @@ public class PostController {
 
     private PostService postService;
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO) {
         return new ResponseEntity<>(postService.createPost(postDTO), HttpStatus.CREATED);
@@ -40,11 +41,13 @@ public class PostController {
         public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") int id) {
             return ResponseEntity.ok(postService.getPostById(id));
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<PostDTO> updatePost(@Valid @RequestBody PostDTO postDTO, @PathVariable int id) {
         PostDTO postResponse = postService.updatePost(postDTO, id);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable int id) {
         postService.deletePostById(id);
