@@ -13,10 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping
 @AllArgsConstructor
 
 public class PostController {
@@ -24,11 +23,11 @@ public class PostController {
     private PostService postService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/api/v1/posts")
     public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO) {
         return new ResponseEntity<>(postService.createPost(postDTO), HttpStatus.CREATED);
     }
-    @GetMapping
+    @GetMapping("/api/v1/posts")
     public PostResponse getAllPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -37,18 +36,18 @@ public class PostController {
             ) {
         return postService.findAllPosts(pageNo, pageSize, sortBy, sortDirection);
     }
-    @GetMapping("/{id}")
-        public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") int id) {
+    @GetMapping( "/api/posts/v1/{id}")
+        public ResponseEntity<PostDTO> getPostByIdV1(@PathVariable(name = "id") int id) {
             return ResponseEntity.ok(postService.getPostById(id));
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{id}")
+    @PatchMapping("/api/v1/posts/{id}")
     public ResponseEntity<PostDTO> updatePost(@Valid @RequestBody PostDTO postDTO, @PathVariable int id) {
         PostDTO postResponse = postService.updatePost(postDTO, id);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/v1/posts/{id}")
     public ResponseEntity<String> deletePost(@PathVariable int id) {
         postService.deletePostById(id);
 
