@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig { // removed old "extends WebSecurityConfigurerAdapter"
+public class SecurityConfig   { // removed old "extends WebSecurityConfigurerAdapter"
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
@@ -58,11 +59,21 @@ public class SecurityConfig { // removed old "extends WebSecurityConfigurerAdapt
 //                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 //                .and()
 //                .authorizeRequests()
-//                .antMatchers(HttpMethod.GET, "/api/**").permitAll() // разрешаем всем гет метод
-//                .antMatchers("/api/auth/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+//                .antMatchers("/api/v1/auth/**").permitAll()
+//                .antMatchers("/v3/api-docs/**").permitAll()
+//                .antMatchers("/swagger-ui/**").permitAll()
+//                .antMatchers("/swagger-resources/**").permitAll()
+//                .antMatchers("/swagger-ui.html").permitAll()
+//                .antMatchers("/webjars/**").permitAll()
 //                .anyRequest()
 //                .authenticated();
 //        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//    }
+//    @Override
+//    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().antMatchers("/swagger-ui/**", "/v3/api-docs/**");
+//    }
 ////                .and()
 ////                .httpBasic();  // basic authentication
 //
@@ -75,20 +86,14 @@ public class SecurityConfig { // removed old "extends WebSecurityConfigurerAdapt
 //
 //    }
 
-    //    @Override
+//        @Override
 //    @Bean
 //    public AuthenticationManager authenticationManagerBean() throws Exception {
 //        return super.authenticationManagerBean();
 //    }
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http.cors().and()
                 .csrf().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
@@ -97,13 +102,33 @@ public class SecurityConfig { // removed old "extends WebSecurityConfigurerAdapt
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests((authorize) -> authorize
-                                .antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
-                                .antMatchers("/api/v1/auth/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+                        .antMatchers("/api/v1/auth/**").permitAll()
+                        .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**").permitAll()
                         .anyRequest()
                         .authenticated()
                 );
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().antMatchers("/auth/**")
+                .antMatchers("/swagger-ui/**")
+                .antMatchers("/swagger-ui.html")
+                .antMatchers("/swagger-resources/**")
+                .antMatchers("/v3/api-docs/**");
+    }
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+}
+
+
+
+
         //    @Override
 //    @Bean
 //    protected UserDetailsService userDetailsService() {
@@ -111,5 +136,5 @@ public class SecurityConfig { // removed old "extends WebSecurityConfigurerAdapt
 //        UserDetails admin = User.builder().username("admin").password(passwordEncoder().encode("admin")).roles("ADMIN").build();
 //        return new InMemoryUserDetailsManager(kirsing, admin);
 //    }
-    }
-}
+
+
