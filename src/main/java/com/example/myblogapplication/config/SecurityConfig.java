@@ -104,7 +104,7 @@ public class SecurityConfig   { // removed old "extends WebSecurityConfigurerAda
                 .authorizeRequests((authorize) -> authorize
                         .antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
                         .antMatchers("/api/v1/auth/**").permitAll()
-                        .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**").permitAll()
+                        .antMatchers("/v3/api-docs/**", "/v2/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**").permitAll()
                         .anyRequest()
                         .authenticated()
                 );

@@ -8,6 +8,8 @@ import com.example.myblogapplication.payload.SignUpDTO;
 import com.example.myblogapplication.repository.RoleRepository;
 import com.example.myblogapplication.repository.UserRepository;
 import com.example.myblogapplication.security.JwtTokenProvider;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +24,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.xml.ws.Response;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@Api(value = "Autth controller exposes sign in and sign up REST APIs")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -45,7 +49,7 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-
+    @ApiOperation(value = "REST API to Log in or Sign in user to Blog application")
     @PostMapping("/signin")
     public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -58,6 +62,7 @@ public class AuthController {
         return ResponseEntity.ok(new JWTAuthResponse(token));
     }
 
+    @ApiOperation(value = "REST API to Register or Sign up user to Blog application")
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDTO) {
         // add check for username exists in a DB
