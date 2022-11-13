@@ -1,0 +1,1 @@
+web: java -jar build/libs/MyBlog-application-0.0.1-SNAPSHOT.jar
