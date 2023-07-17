@@ -26,12 +26,14 @@ public class MyBlogApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Role roleAdmin = new Role();
-        roleAdmin.setName("ROLE_ADMIN");
-        roleRepository.save(roleAdmin);
+  if (roleRepository.findAll().isEmpty()) {
+      Role roleAdmin = new Role();
+      roleAdmin.setName("ROLE_ADMIN");
+      roleRepository.save(roleAdmin);
 
-        Role roleUser = new Role();
-        roleUser.setName("ROLE_USER");
-        roleRepository.save(roleUser);
-    }
+      Role roleUser = new Role();
+      roleUser.setName("ROLE_USER");
+      roleRepository.save(roleUser);
+  }
+  }
 }
